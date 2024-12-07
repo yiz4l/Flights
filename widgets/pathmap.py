@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QWidget
-from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl
+from qframelesswindow.webengine import FramelessWebEngineView
 import folium
 import base64
 
@@ -14,7 +14,7 @@ class MapWidget(QWidget):
         layout = QVBoxLayout(self)
 
         # 创建 QWebEngineView 以显示地图
-        self.map_view = QWebEngineView()
+        self.map_view = FramelessWebEngineView(self)
         layout.addWidget(self.map_view)
 
         # 生成地图
@@ -44,7 +44,7 @@ class MapWidget(QWidget):
         data_uri = f"data:text/html;base64,{encoded}"
 
         # 在 QWebEngineView 中加载 HTML 内容
-        self.map_view.setUrl(QUrl(data_uri))
+        self.map_view.load(QUrl(data_uri))
 
 
 # 示例用法

@@ -76,7 +76,7 @@ class userCard(CardWidget):
         
         self.setLayout(self.hBoxLayout)
         
-    def on_click_change_info():
+    def on_click_change_info(self):
         print("Change info")
 
 class passengerCard(ElevatedCardWidget):
@@ -99,5 +99,5 @@ class passengerCard(ElevatedCardWidget):
         
         self.setLayout(self.vBoxLayout)
         
-    def on_click_change_info():
+    def on_click_change_info(self):
         print("Change info")

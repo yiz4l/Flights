@@ -32,7 +32,6 @@ class Window(FluentWindow):
         super().__init__()
 
         # 创建子界面，实际使用时将 Widget 换成自己的子界面
-        # self.homeInterface = Widget('Home Interface', self)
         self.homeInterface = TicketWidget(account, self)
         self.orderInterface = orderlist(account, self)
         self.myinfoInterface = myinfoWidget(account, self)

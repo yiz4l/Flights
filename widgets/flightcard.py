@@ -1,5 +1,5 @@
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSizePolicy
 from qfluentwidgets import CardWidget, IconWidget, BodyLabel, StrongBodyLabel, CaptionLabel, PushButton, InfoBadge, InfoBadgePosition
 from datetime import datetime
 from typing import List
@@ -51,6 +51,11 @@ class flightinfo(QWidget):
         self.companyLabel = StrongBodyLabel(flight.company)
         self.fltLabel = CaptionLabel(flight.flt)
         self.modelLabel = CaptionLabel(flight.model)
+        
+        self.companyLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self.fltLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self.modelLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        
         self.departureTimeLabel = BodyLabel(flight.departure_time[-8:-3])
         # self.departureTimeBadge = InfoBadge.custom(f'+{departureDays}','#005fb8', '#60cdff')
         self.arrivalTimeLabel = BodyLabel(flight.arrival_time[-8:-3])

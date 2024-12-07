@@ -10,7 +10,7 @@ from models.flight import Flight
 from models.graph import Graph
 from models.ticket import Ticket
 from widgets.flightcard import flightinfo, flightcard
-from widgets.flightdetail import flightdetail
+from widgets.flightdetail import FlightDetailWindow
 
 
 class TicketWidget(QWidget):
@@ -151,6 +151,8 @@ class TicketWidget(QWidget):
         cards_widget = QWidget()
         cards_layout = QVBoxLayout(cards_widget)
         for flights in flights_plans:
+            if flights[0].departure_datetime.date() != date:
+                continue
             if not self.transfer_button.isChecked() and len(flights) > 1:
                 continue
             fc = flightcard(flights)
@@ -159,6 +161,7 @@ class TicketWidget(QWidget):
         cards_widget.setLayout(cards_layout)
         
         self.scrollFlightsArea.setWidget(cards_widget)
+        self.scrollFlightsArea.setWidgetResizable(True)
         self.scrollFlightsArea.show()
 
     def on_click_price(self):
@@ -170,8 +173,9 @@ class TicketWidget(QWidget):
         self.sort_button.setText("Duration")
 
     def on_click_book(self, flights: List[Flight]):
-        fd = flightdetail(
+        self.account = Database.query_userinfo(self.account.username)
+        self.fd = FlightDetailWindow(
             account=self.account,
             flight=flights
         )
-        fd.show()
+        self.fd.show()

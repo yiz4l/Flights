@@ -861,7 +861,7 @@ class Database:
                 # 删除 tickets 表中的记录
                 cursor.execute('''
                        DELETE FROM tickets 
-                       WHERE passenger_id = ? AND flight_id = (SELECT id FROM flights WHERE flight_id = ?);
+                       WHERE passenger_id = ? AND flight_id = ?;
                    ''', (ticket.passenger.id, ticket.flight.flt))
 
             # 删除订单记录
@@ -885,6 +885,56 @@ class Database:
         finally:
             # 关闭数据库连接
             conn.close()
+
+    @staticmethod
+    def upgrade_order(tickets: list[Ticket]):  # 处理票的列表
+        conn = sqlite3.connect('flight_booking.db')
+        cursor = conn.cursor()
+
+        try:
+            for ticket in tickets:
+                cursor.execute('''
+                    SELECT ticket_id, flight_id FROM tickets 
+                    WHERE passenger_id = ? AND flight_id = ?;
+                ''', (ticket.passenger.id, ticket.flight.flt))
+                existing_ticket = cursor.fetchone()
+
+                if not existing_ticket:
+                    raise OrderNotFoundError(f"Ticket with passenger ID {ticket.passenger.id} not found.")
+                
+                tickets_id, flight_id = existing_ticket
+                # 更新票的舱位为 Premium
+                cursor.execute('''
+                    UPDATE tickets 
+                    SET cabin_class = 'Premium'
+                    WHERE ticket_id = ?;
+                ''', (tickets_id,))
+
+                # 更新订单价格
+                cursor.execute('''
+                    SELECT premium_price FROM flights WHERE flight_id = ?;
+                ''', (flight_id,))
+                premium_price = cursor.fetchone()
+                if premium_price:
+                    cursor.execute('''
+                        UPDATE orders
+                        SET price = ?
+                        WHERE order_id = (SELECT order_id FROM order_tickets WHERE ticket_id = ?);
+                    ''', (premium_price[0], tickets_id))
+
+            conn.commit()
+
+        except OrderNotFoundError as e:
+            conn.rollback()
+            print(f"Error: {e}")
+
+        except Exception as e:
+            conn.rollback()
+            print(f"An error occurred: {e}")
+
+        finally:
+            conn.close()
+
 
     @staticmethod
     def query_orders(user: Account) -> List[Order]:
